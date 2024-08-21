@@ -91,29 +91,67 @@ class CarneController extends Controller{
 
         $request->valor_entrada = isset($request->valor_entrada) ? $request->valor_entrada : 0;
 
+
         if( empty($request->valor_total) || empty($request->qtd_parcelas) || empty($request->data_primeiro_vencimento) || empty($request->periodicidade) ){
 
             return "Algum parametro de entrada obrigatório não foi enviado ou está incorreto";
 
-        }elseif( $request->periodicidade != "mensal" && $request->periodicidade != "semanal" ){
+        }else{
 
-            return "Periodicidade inválida, escolha entre 'mensal' e 'semanal' ";
+            $date_is_valid = $this->validaData($request->data_primeiro_vencimento);
 
-        }elseif( $request->valor_entrada < 0 || $request->valor_total <= 0 ){
+            if(!is_bool($date_is_valid)){
 
-            return "O valor total do carnê não pode ser igual ou menor que zero. A entrada, se existir, precisa ser maior que zero";
+                return $date_is_valid;
+    
+            }elseif( $request->periodicidade != "mensal" && $request->periodicidade != "semanal" ){
+
+                return "Periodicidade inválida, escolha entre 'mensal' e 'semanal' ";
+    
+            }elseif( $request->valor_entrada < 0 || $request->valor_total <= 0 ){
+    
+                return "O valor total do carnê não pode ser igual ou menor que zero. A entrada, se existir, precisa ser maior que zero";
+                
+            }elseif( $request->valor_entrada >= $request->valor_total ){
+    
+                return "O valor da entrada não pode ser igual ou maior que o valor total do carnê";
+                
+            }elseif( $request->qtd_parcelas <= 0 ){
+    
+                return "O número de parcelas precisa ser maior que zero";
+                
+            }
+
+
+            return true;
+        }
+        
+    }
+
+    public function validaData(string $data) : bool | string {
+
+        if (!preg_match('/^\d{4}[-\/]\d{2}[-\/]\d{2}$/', $data)) {
+            return "Data de vencimento em formato incorreto, são válidos: 'yyyy-mm-dd' e 'yyyy/mm/dd' ";
+        }else{
             
-        }elseif( $request->valor_entrada >= $request->valor_total ){
+            $data = str_replace('/', '-', $data);
+            [$ano, $mes, $dia] = explode('-', $data);
 
-            return "O valor da entrada não pode ser igual ou maior que o valor total do carnê";
-            
-        }elseif( $request->qtd_parcelas <= 0 ){
+            if (!checkdate((int)$mes, (int)$dia, (int)$ano)) {
+                return "A data de vencimento especificada não existe. É possível que tenha sido inserido um dia 31 em um mês que tem apenas 30 dias";
+            }
 
-            return "O número de parcelas precisa ser maior que zero";
-            
+            $dataInformada = new DateTime($data);
+            $dataAtual = new DateTime();
+
+            if ($dataInformada < $dataAtual) {
+                return "A data de vencimento precisa ser posterior ao dia de hoje, " . $dataAtual->format('Y-m-d');
+            }
+        
+            return true;
+
         }
 
-        return true;
 
     }
 
@@ -139,7 +177,7 @@ class CarneController extends Controller{
 
         $novaData->modify($add_text);
 
-        return $novaData->format('Y/m/d');
+        return $novaData->format('Y-m-d');
 
     }
 
@@ -156,7 +194,7 @@ class CarneController extends Controller{
             $dataAtual = new DateTime();
 
             $parcela_entrada= [
-                'data_vencimento' => $dataAtual->format('Y/m/d'),
+                'data_vencimento' => $dataAtual->format('Y-m-d'),
                 'valor' => (float)$valorEntrada,
                 'numero' => 'parcela = ' . 1,
                 'entrada' => true
