@@ -31,7 +31,7 @@ class CarneController extends Controller{
 
         $novoCarne = $this->getRequestBody();
 
-        $isValid = $this->IsRequestValid($novoCarne);
+        $isValid = $this->isRequestValid($novoCarne);
         if(!is_bool($isValid)){
             http_response_code(400);
             echo json_encode([
@@ -83,87 +83,83 @@ class CarneController extends Controller{
 
 
 
-
-
-
-
-    private function IsRequestValid($request) : bool | string {
-
-        $request->valor_entrada = isset($request->valor_entrada) ? $request->valor_entrada : 0;
-
-
-        if( empty($request->valor_total) || empty($request->qtd_parcelas) || empty($request->data_primeiro_vencimento) || empty($request->periodicidade) ){
-
-            return "Algum parametro de entrada obrigatório não foi enviado ou está incorreto";
-
-        }else{
-
-            $date_is_valid = $this->validaData($request->data_primeiro_vencimento);
-
-            if(!is_bool($date_is_valid)){
-
-                return $date_is_valid;
+    private function isRequestValid($request): bool|string {
+        $request->valor_entrada = $request->valor_entrada ?? 0;
     
-            }elseif( $request->periodicidade != "mensal" && $request->periodicidade != "semanal" ){
-
-                return "Periodicidade inválida, escolha entre 'mensal' e 'semanal' ";
-    
-            }elseif( $request->valor_entrada < 0 || $request->valor_total <= 0 ){
-    
-                return "O valor total do carnê não pode ser igual ou menor que zero. A entrada, se existir, precisa ser maior que zero";
-                
-            }elseif( $request->valor_entrada >= $request->valor_total ){
-    
-                return "O valor da entrada não pode ser igual ou maior que o valor total do carnê";
-                
-            }elseif( $request->qtd_parcelas <= 0 ){
-    
-                return "O número de parcelas precisa ser maior que zero";
-                
-            }
-
-
-            return true;
+        if (!$this->hasRequiredParameters($request)) {
+            return "Algum parâmetro de entrada obrigatório não foi enviado ou está incorreto";
         }
-        
+    
+        elseif (($dateValidation = $this->validateDate($request->data_primeiro_vencimento)) !== true) {
+            return $dateValidation;
+        }
+    
+        elseif (!$this->isValidPeriodicidade($request->periodicidade)) {
+            return "Periodicidade inválida, escolha entre 'mensal' e 'semanal'";
+        }
+    
+        elseif (($valueValidation = $this->validateValues($request->valor_entrada, $request->valor_total)) !== true) {
+            return $valueValidation;
+        }
+
+        elseif ($request->qtd_parcelas <= 0) {
+            return "O número de parcelas precisa ser maior que zero";
+        }
+    
+        return true;
     }
-
-    public function validaData(string $data) : bool | string {
-
-        if (!preg_match('/^\d{4}[-\/]\d{2}[-\/]\d{2}$/', $data)) {
-            return "Data de vencimento em formato incorreto, são válidos: 'yyyy-mm-dd' e 'yyyy/mm/dd' ";
-        }else{
-            
-            $data = str_replace('/', '-', $data);
-            [$ano, $mes, $dia] = explode('-', $data);
-
-            if (!checkdate((int)$mes, (int)$dia, (int)$ano)) {
-                return "A data de vencimento especificada não existe. É possível que tenha sido inserido um dia 31 em um mês que tem apenas 30 dias";
-            }
-
-            $dataInformada = new DateTime($data);
-            $dataAtual = new DateTime();
-
-            if ($dataInformada < $dataAtual) {
-                return "A data de vencimento precisa ser posterior ao dia de hoje, " . $dataAtual->format('Y-m-d');
-            }
-        
-            return true;
-
+    
+    private function hasRequiredParameters($request): bool {
+        return !empty($request->valor_total) &&
+               !empty($request->qtd_parcelas) &&
+               !empty($request->data_primeiro_vencimento) &&
+               !empty($request->periodicidade);
+    }
+    
+    private function isValidPeriodicidade(string $periodicidade): bool {
+        return in_array($periodicidade, ['mensal', 'semanal']);
+    }
+    
+    private function validateValues(float $valor_entrada, float $valor_total): bool|string {
+        if ($valor_entrada < 0 || $valor_total <= 0) {
+            return "O valor total do carnê não pode ser igual ou menor que zero. A entrada, se existir, precisa ser maior que zero";
+        } elseif ($valor_entrada >= $valor_total) {
+            return "O valor da entrada não pode ser igual ou maior que o valor total do carnê";
         }
-
-
+        return true;
+    }
+    
+    public function validateDate(string $data): bool|string {
+        if (!preg_match('/^\d{4}[-\/]\d{2}[-\/]\d{2}$/', $data)) {
+            return "Data de vencimento em formato incorreto, são válidos: 'yyyy-mm-dd' e 'yyyy/mm/dd'";
+        }
+    
+        $data = str_replace('/', '-', $data);
+        [$ano, $mes, $dia] = explode('-', $data);
+    
+        if (!checkdate((int)$mes, (int)$dia, (int)$ano)) {
+            return "A data de vencimento especificada não existe. É possível que tenha sido inserido um dia 31 em um mês que tem apenas 30 dias";
+        }
+    
+        $dataInformada = new DateTime($data);
+        $dataAtual = new DateTime();
+    
+        if ($dataInformada < $dataAtual) {
+            return "A data de vencimento precisa ser posterior ao dia de hoje, " . $dataAtual->format('Y-m-d');
+        }
+    
+        return true;
     }
 
     public function somaDatas(string $dataOriginal, int $numPeriodos, string $periodicidade) : string {
 
         if($periodicidade == "mensal"){
 
-            $add_text = "+" . $numPeriodos . " months";
+            $add_text = "+ " . $numPeriodos . "months";
 
         }elseif($periodicidade == "semanal"){
 
-            $add_text = "+" . $numPeriodos . " weeks";
+            $add_text = "+ " . $numPeriodos . "weeks";
 
         }else{
 
