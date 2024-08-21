@@ -23,7 +23,67 @@ class CarneController extends Controller{
         
     }
 
-    public function somaDatas(string $dataOriginal, int $numPeriodos, string $periodicidade){
+    public function store(){
+
+        $novoCarne = $this->getRequestBody();
+
+        $isValid = $this->IsRequestValid($novoCarne);
+        if(!is_bool($isValid)){
+            http_response_code(400);
+            echo json_encode([
+                "Erro" => $isValid,
+                "Instruções" => "Consulte a documentação para entender o formato exato dos parametros de entrada"
+            ]);
+            die();
+        }
+
+        $carne = $this->model("Carne");
+        $carne->valor_total = $novoCarne->valor_total;
+        $carne->qtd_parcelas = $novoCarne->qtd_parcelas;
+        $carne->data_primeiro_vencimento = $novoCarne->data_primeiro_vencimento;
+        $carne->periodicidade = $novoCarne->periodicidade;
+        $carne->valor_entrada = $novoCarne->valor_entrada;
+
+        $carne = $carne->insert();
+
+        if ($carne) {
+
+            $parcelas = $this->calulaParcelas($carne->valor_total, $carne->qtd_parcelas, $carne->data_primeiro_vencimento, $carne->periodicidade, $carne->valor_entrada);
+
+            $response = [
+
+                'total' => $carne->valor_total,
+                'valor_entrada' => $carne->valor_entrada,
+                'parcelas' => $parcelas
+
+            ];
+
+            http_response_code(200);
+            echo json_encode($response);
+
+        } else {
+
+            http_response_code(500);
+            echo json_encode(["Erro" => "Problemas ao inserir novo carnê"]);
+
+        }
+
+    }
+
+
+
+
+
+
+
+    private function IsRequestValid($request){
+
+        //Validar alguns tipos de requests, para evitar valores negativos, por exemplo
+        return true;
+
+    }
+
+    public function somaDatas(string $dataOriginal, int $numPeriodos, string $periodicidade) : string {
 
         if($periodicidade == "mensal"){
 
