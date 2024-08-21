@@ -1,6 +1,6 @@
 {
     "name": "heronpbv/api-carnes",
-    "description": "API restfull de gerenciamento de parcelas de carnês.",
+    "description": "API RESTful para Parcelas de Carnê",
     "authors": [
         {
             "name": "Heron Péricles Boares Vieira"
