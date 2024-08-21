@@ -13,7 +13,7 @@ class Carne{
     public $periodicidade;
     public $valor_entrada = 0;
 
-    public function select(int $id){
+    public function select(int $id) : Carne {
 
         $query = " SELECT * FROM ". self::$table_name ." WHERE id = ? ";
         $stmt = Model::getConn()->prepare($query);
@@ -48,4 +48,31 @@ class Carne{
         }
 
     }
+
+    public function insert() : Carne {
+        
+        $query = " INSERT INTO ". self::$table_name ." (valor_total, qtd_parcelas, data_primeiro_vencimento, periodicidade, valor_entrada) VALUES (?, ?, ?, ?, ?) ";
+        
+        $stmt = Model::getConn()->prepare($query);
+        $stmt->bindValue(1, $this->valor_total);
+        $stmt->bindValue(2, $this->qtd_parcelas);
+        $stmt->bindValue(3, $this->data_primeiro_vencimento);
+        $stmt->bindValue(4, $this->periodicidade);
+        $stmt->bindValue(5, $this->valor_entrada);
+
+        if ($stmt->execute()) {
+
+            $this->id = Model::getConn()->lastInsertId();
+            return $this;
+
+        } else {
+
+            http_response_code(500);
+            echo json_encode(["Erro" => "Query não executada"]);
+            die();
+
+        }
+
+    }
+
 }

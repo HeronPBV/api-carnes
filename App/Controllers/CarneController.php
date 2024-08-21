@@ -70,13 +70,19 @@ class CarneController extends Controller{
 
     }
 
+    public function destroy(){
+
+        //Para implementar futuramente a exclusão lógica de algum carnê que, por exemplo, o cliente tenha devolvido
+
+    }
 
 
 
 
 
 
-    private function IsRequestValid($request){
+
+    private function IsRequestValid($request) : bool | string {
 
         //Validar alguns tipos de requests, para evitar valores negativos, por exemplo
         return true;
