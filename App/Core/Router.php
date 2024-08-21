@@ -18,7 +18,11 @@ class Router{
 
         $this->method = $_SERVER["REQUEST_METHOD"];
 
-        if( $this->method == 'GET' && empty($url[1]) ){
+        if(file_exists("../App/Controllers/" . ucfirst($url[1]) . "Controller.php")){
+
+            $this->controller = $url[1] . 'Controller';
+
+        }elseif( $this->method == 'GET' && empty($url[1]) ){
 
             http_response_code(200);
             echo json_encode([
@@ -29,16 +33,12 @@ class Router{
             
             exit;
 
-        }elseif( $this->isRouteNotValid($this->method, $url[1]) ){
+        }else{
 
             http_response_code(404);
             echo json_encode(["Erro" => "Rota inválida"]);
             
             exit;
-
-        }else{
-
-            $this->controller = 'CarneController';
 
         }
 
@@ -52,7 +52,7 @@ class Router{
             case "GET":
 
                 $this->controllerMethod = "find";
-                $this->params = [(int)$url[1]];
+                $this->params = [(int)$url[2]];
 
                 break;
 
@@ -71,6 +71,7 @@ class Router{
         }
 
         call_user_func_array([$this->controller, $this->controllerMethod], $this->params);
+        
     }
 
     private function isRouteNotValid($method, $urlArg){
