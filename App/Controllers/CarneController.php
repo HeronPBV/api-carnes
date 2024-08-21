@@ -83,7 +83,8 @@ class CarneController extends Controller{
 
 
 
-    private function isRequestValid($request): bool|string {
+    private function isRequestValid($request) : bool|string {
+
         $request->valor_entrada = $request->valor_entrada ?? 0;
     
         if (!$this->hasRequiredParameters($request)) {
@@ -107,29 +108,34 @@ class CarneController extends Controller{
         }
     
         return true;
+
     }
     
-    private function hasRequiredParameters($request): bool {
+    private function hasRequiredParameters($request) : bool {
         return !empty($request->valor_total) &&
                !empty($request->qtd_parcelas) &&
                !empty($request->data_primeiro_vencimento) &&
                !empty($request->periodicidade);
     }
     
-    private function isValidPeriodicidade(string $periodicidade): bool {
+    private function isValidPeriodicidade(string $periodicidade) : bool {
         return in_array($periodicidade, ['mensal', 'semanal']);
     }
     
-    private function validateValues(float $valor_entrada, float $valor_total): bool|string {
+    private function validateValues(float $valor_entrada, float $valor_total) : bool|string {
+
         if ($valor_entrada < 0 || $valor_total <= 0) {
             return "O valor total do carnê não pode ser igual ou menor que zero. A entrada, se existir, precisa ser maior que zero";
         } elseif ($valor_entrada >= $valor_total) {
             return "O valor da entrada não pode ser igual ou maior que o valor total do carnê";
         }
+
         return true;
+
     }
     
     public function validateDate(string $data): bool|string {
+        
         if (!preg_match('/^\d{4}[-\/]\d{2}[-\/]\d{2}$/', $data)) {
             return "Data de vencimento em formato incorreto, são válidos: 'yyyy-mm-dd' e 'yyyy/mm/dd'";
         }

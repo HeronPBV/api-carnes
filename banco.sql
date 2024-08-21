@@ -7,6 +7,6 @@ CREATE TABLE carnes (
 	qtd_parcelas int not NULL,
 	data_primeiro_vencimento date not NULL,
 	periodicidade varchar(10) not NULL,
-	valor_entrada DECIMAL(10, 2)
+	valor_entrada DECIMAL(10, 2) DEFAULT 0
 	
 );
