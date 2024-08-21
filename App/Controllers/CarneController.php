@@ -6,7 +6,11 @@ class CarneController extends Controller{
 
     public function index(){
 
-        //Mostra uma mensagem de instrução, caso o request seja GET e não contenha ID
+        http_response_code(200);
+        echo json_encode([
+            "Instrução" => "Inclua o id do carnê buscado para receber as suas, informações ou acesse a documentação para descobrir os endpoints disponíveis",
+            "Documentação" => DOC
+        ]);
 
     }
 
@@ -32,7 +36,8 @@ class CarneController extends Controller{
             http_response_code(400);
             echo json_encode([
                 "Erro" => $isValid,
-                "Instruções" => "Consulte a documentação para entender o formato exato dos parametros de entrada"
+                "Instruções" => "Consulte a documentação para entender o formato exato dos parametros de entrada",
+                "Documentação" => DOC
             ]);
             die();
         }
@@ -42,7 +47,7 @@ class CarneController extends Controller{
         $carne->qtd_parcelas = $novoCarne->qtd_parcelas;
         $carne->data_primeiro_vencimento = $novoCarne->data_primeiro_vencimento;
         $carne->periodicidade = $novoCarne->periodicidade;
-        $carne->valor_entrada = $novoCarne->valor_entrada;
+        $carne->valor_entrada = empty($novoCarne->valor_entrada) ? 0 : $novoCarne->valor_entrada;
 
         $carne = $carne->insert();
 
@@ -84,7 +89,30 @@ class CarneController extends Controller{
 
     private function IsRequestValid($request) : bool | string {
 
-        //Validar alguns tipos de requests, para evitar valores negativos, por exemplo
+        $request->valor_entrada = isset($request->valor_entrada) ? $request->valor_entrada : 0;
+
+        if( empty($request->valor_total) || empty($request->qtd_parcelas) || empty($request->data_primeiro_vencimento) || empty($request->periodicidade) ){
+
+            return "Algum parametro de entrada obrigatório não foi enviado ou está incorreto";
+
+        }elseif( $request->periodicidade != "mensal" && $request->periodicidade != "semanal" ){
+
+            return "Periodicidade inválida, escolha entre 'mensal' e 'semanal' ";
+
+        }elseif( $request->valor_entrada < 0 || $request->valor_total <= 0 ){
+
+            return "O valor total do carnê não pode ser igual ou menor que zero. A entrada, se existir, precisa ser maior que zero";
+            
+        }elseif( $request->valor_entrada >= $request->valor_total ){
+
+            return "O valor da entrada não pode ser igual ou maior que o valor total do carnê";
+            
+        }elseif( $request->qtd_parcelas <= 0 ){
+
+            return "O número de parcelas precisa ser maior que zero";
+            
+        }
+
         return true;
 
     }
@@ -102,8 +130,8 @@ class CarneController extends Controller{
         }else{
 
             http_response_code(400);
-            return ["Erro" => "periodicidade inválida"];
-            exit;
+            echo json_encode(["Erro" => "periodicidade inválida"]);
+            die();
 
         }
 
