@@ -15,47 +15,9 @@ class CarneController extends Controller{
         $carneModel = $this->model("Carne");
         $carne = $carneModel->select($id);
 
-        $parcelas = [];
+        $parcelas = $this->calulaParcelas($carne->valor_total, $carne->qtd_parcelas, $carne->data_primeiro_vencimento, $carne->periodicidade, $carne->valor_entrada);
 
         $tem_entrada = (bool)$carne->valor_entrada;
-
-        if($tem_entrada){
-
-            $valor_cada_parcela = ($carne->valor_total - $carne->valor_entrada) / $carne->qtd_parcelas;
-
-            $dataAtual = new DateTime();
-
-            $parcela_entrada= [
-                'data_vencimento' => $dataAtual->format('Y/m/d'),
-                'valor' => (float)$carne->valor_entrada,
-                'numero' => 'parcela = ' . 1,
-                'entrada' => $tem_entrada
-            ];
-
-            array_push($parcelas, $parcela_entrada);
-
-        }else{
-
-            $valor_cada_parcela = $carne->valor_total / $carne->qtd_parcelas;
-
-        }
-
-        for($i = 1; $i <= $carne->qtd_parcelas; $i++ ){
-
-            $numero_parcela = $tem_entrada ? ($i + 1) : $i;
-
-            $numPeriodos = $i - 1;
-
-            $parcela = [
-                'data_vencimento' => $this->somaDatas($carne->data_primeiro_vencimento, $numPeriodos, $carne->periodicidade),
-                'valor' => $valor_cada_parcela,
-                'numero' => 'parcela = ' . $numero_parcela,
-                'entrada' => false,
-            ];
-
-            array_push($parcelas, $parcela);
-
-        }
 
         echo json_encode($parcelas, JSON_UNESCAPED_UNICODE);
         
@@ -87,9 +49,51 @@ class CarneController extends Controller{
 
     }
 
-    public function calulaParcelas($valorCadaParcela, $numParcelas, $primeiro_vencimento){
+    public function calulaParcelas(float $valorTotal, int $numParcelas, string $primeiro_vencimento, string $periodicidade, float $valorEntrada = 0) : array {
 
-        //Abstrair a lógica do calculo de parcelas, para reutilizar a mesma no cadastro e na busca dos carnes
+        $parcelas = [];
+
+        $tem_entrada = (bool)$valorEntrada;
+
+        if($tem_entrada){
+
+            $valor_cada_parcela = ($valorTotal - $valorEntrada) / $numParcelas;
+
+            $dataAtual = new DateTime();
+
+            $parcela_entrada= [
+                'data_vencimento' => $dataAtual->format('Y/m/d'),
+                'valor' => (float)$valorEntrada,
+                'numero' => 'parcela = ' . 1,
+                'entrada' => true
+            ];
+
+            array_push($parcelas, $parcela_entrada);
+
+        }else{
+
+            $valor_cada_parcela = $valorTotal / $numParcelas;
+
+        }
+
+        for($i = 1; $i <= $numParcelas; $i++ ){
+
+            $numero_parcela = $tem_entrada ? ($i + 1) : $i;
+
+            $numPeriodos = $i - 1;
+
+            $parcela = [
+                'data_vencimento' => $this->somaDatas($primeiro_vencimento, $numPeriodos, $periodicidade),
+                'valor' => $valor_cada_parcela,
+                'numero' => 'parcela = ' . $numero_parcela,
+                'entrada' => false,
+            ];
+
+            array_push($parcelas, $parcela);
+
+        }
+
+        return $parcelas;
 
     }
 
