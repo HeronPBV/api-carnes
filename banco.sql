@@ -1,4 +1,6 @@
-create table carnes (
+CREATE DATABASE apirestfull;
+
+CREATE TABLE carnes (
 
 	id int primary key auto_increment,
 	valor_total DECIMAL(10, 2) not NULL,
