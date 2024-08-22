@@ -107,7 +107,9 @@ class CarneController extends Controller{
             return $valueValidation;
         }
 
-        // Observar o caso de uma única parcela com entrada menor que o valor do carnê
+        elseif($request->qtd_parcelas == 1 && (bool)$request->valor_entrada && $request->valor_entrada < $request->valor_total){
+            return "Não é possível dar entrada em um carnê de uma única parcela";
+        }
 
         elseif ($request->qtd_parcelas <= 0) {
             return "O número de parcelas precisa ser maior que zero";
