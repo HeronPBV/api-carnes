@@ -107,6 +107,8 @@ class CarneController extends Controller{
             return $valueValidation;
         }
 
+        // Observar o caso de uma única parcela com entrada menor que o valor do carnê
+
         elseif ($request->qtd_parcelas <= 0) {
             return "O número de parcelas precisa ser maior que zero";
         }
@@ -151,12 +153,7 @@ class CarneController extends Controller{
             return "A data de vencimento especificada não existe. É possível que tenha sido inserido um dia 31 em um mês que tem apenas 30 dias";
         }
     
-        $dataInformada = new DateTime($data);
-        $dataAtual = new DateTime();
-    
-        if ($dataInformada < $dataAtual) {
-            return "A data de vencimento precisa ser posterior ao dia de hoje, " . $dataAtual->format('Y-m-d');
-        }
+        //Validação caso a data de vencimento não seja posterior ao dia de hoje
     
         return true;
     }
@@ -187,21 +184,23 @@ class CarneController extends Controller{
 
     }
 
-    public function calculaParcelas( float $valorTotal, int $numParcelas, string $primeiroVencimento, string $periodicidade, float $valorEntrada = 0 ) : array {
-       
+    public function calculaParcelas(float $valorTotal, int $numParcelas, string $primeiroVencimento, string $periodicidade, float $valorEntrada = 0): array {
+
         $parcelas = [];
         $dataAtual = new DateTime();
-        
-        if ($valorEntrada > 0) {
-            $valorParcela = ($valorTotal - $valorEntrada) / ($numParcelas - 1);
-        } else {
-            $valorParcela = $valorTotal / $numParcelas;
-        }
-
+    
+        $valorParcelas = $numParcelas - ($valorEntrada > 0 ? 1 : 0);
+        $valorParcela = $valorParcelas > 0 ? ($valorTotal - $valorEntrada) / $valorParcelas : 0;
+    
+        $valorParcelaArredondado = round($valorParcela, 2);
+        $totalParcelasArredondadas = $valorParcelaArredondado * $valorParcelas;
+    
+        $diferenca = $valorTotal - $valorEntrada - $totalParcelasArredondadas;
+    
         if ($valorEntrada > 0) {
             $parcelas[] = [
                 'data_vencimento' => $dataAtual->format('Y-m-d'),
-                'valor' => $valorEntrada,
+                'valor' => round($valorEntrada, 2),
                 'numero' => 'parcela = 1',
                 'entrada' => true,
             ];
@@ -209,17 +208,19 @@ class CarneController extends Controller{
         } else {
             $startIndex = 0; // Começa a partir da primeira parcela
         }
-
+    
         for ($i = $startIndex; $i < $numParcelas; $i++) {
             $dataVencimento = $this->somaDatas($primeiroVencimento, $i, $periodicidade);
+            $valorAtualParcela = $i === ($numParcelas - 1) ? $valorParcelaArredondado + $diferenca : $valorParcelaArredondado;
+    
             $parcelas[] = [
                 'data_vencimento' => $dataVencimento,
-                'valor' => $valorParcela,
+                'valor' => round($valorAtualParcela, 2),
                 'numero' => 'parcela = ' . ($i + 1),
                 'entrada' => false,
             ];
         }
-
+    
         return $parcelas;
     }
 
