@@ -20,7 +20,7 @@ class Router{
 
         if(file_exists("../App/Controllers/" . ucfirst($url[1]) . "Controller.php")){
 
-            $this->controller = $url[1] . 'Controller';
+            $this->controller = ucfirst($url[1]) . 'Controller';
 
         }elseif( $this->method == 'GET' && empty($url[1]) ){
 

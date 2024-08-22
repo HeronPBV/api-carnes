@@ -19,7 +19,7 @@ class CarneController extends Controller{
         $carneModel = $this->model("Carne");
         $carne = $carneModel->select($id);
 
-        $parcelas = $this->calulaParcelas($carne->valor_total, $carne->qtd_parcelas, $carne->data_primeiro_vencimento, $carne->periodicidade, $carne->valor_entrada);
+        $parcelas = $this->calculaParcelas($carne->valor_total, $carne->qtd_parcelas, $carne->data_primeiro_vencimento, $carne->periodicidade, $carne->valor_entrada);
 
         $tem_entrada = (bool)$carne->valor_entrada;
 
@@ -47,13 +47,13 @@ class CarneController extends Controller{
         $carne->qtd_parcelas = $novoCarne->qtd_parcelas;
         $carne->data_primeiro_vencimento = $novoCarne->data_primeiro_vencimento;
         $carne->periodicidade = $novoCarne->periodicidade;
-        $carne->valor_entrada = empty($novoCarne->valor_entrada) ? 0 : $novoCarne->valor_entrada;
+        $carne->valor_entrada = $novoCarne->valor_entrada ?? 0;
 
         $carne = $carne->insert();
 
         if ($carne) {
 
-            $parcelas = $this->calulaParcelas($carne->valor_total, $carne->qtd_parcelas, $carne->data_primeiro_vencimento, $carne->periodicidade, $carne->valor_entrada);
+            $parcelas = $this->calculaParcelas($carne->valor_total, $carne->qtd_parcelas, $carne->data_primeiro_vencimento, $carne->periodicidade, $carne->valor_entrada);
 
             $response = [
 
@@ -85,7 +85,11 @@ class CarneController extends Controller{
 
     private function isRequestValid($request) : bool|string {
 
-        $request->valor_entrada = $request->valor_entrada ?? 0;
+        if(empty($request)){
+            return "É necessário um corpo para processar a sua requisição";
+        }else{
+            $request->valor_entrada = $request->valor_entrada ?? 0;
+        }
     
         if (!$this->hasRequiredParameters($request)) {
             return "Algum parâmetro de entrada obrigatório não foi enviado ou está incorreto";
@@ -135,7 +139,7 @@ class CarneController extends Controller{
     }
     
     public function validateDate(string $data): bool|string {
-        
+
         if (!preg_match('/^\d{4}[-\/]\d{2}[-\/]\d{2}$/', $data)) {
             return "Data de vencimento em formato incorreto, são válidos: 'yyyy-mm-dd' e 'yyyy/mm/dd'";
         }
@@ -183,52 +187,39 @@ class CarneController extends Controller{
 
     }
 
-    public function calulaParcelas(float $valorTotal, int $numParcelas, string $primeiro_vencimento, string $periodicidade, float $valorEntrada = 0) : array {
-
+    public function calculaParcelas( float $valorTotal, int $numParcelas, string $primeiroVencimento, string $periodicidade, float $valorEntrada = 0 ) : array {
         $parcelas = [];
-
-        $tem_entrada = (bool)$valorEntrada;
-
-        if($tem_entrada){
-
-            $valor_cada_parcela = ($valorTotal - $valorEntrada) / $numParcelas;
-
-            $dataAtual = new DateTime();
-
-            $parcela_entrada= [
-                'data_vencimento' => $dataAtual->format('Y-m-d'),
-                'valor' => (float)$valorEntrada,
-                'numero' => 'parcela = ' . 1,
-                'entrada' => true
-            ];
-
-            array_push($parcelas, $parcela_entrada);
-
-        }else{
-
-            $valor_cada_parcela = $valorTotal / $numParcelas;
-
+        $dataAtual = new DateTime();
+        
+        if ($valorEntrada > 0) {
+            $valorParcela = ($valorTotal - $valorEntrada) / ($numParcelas - 1);
+        } else {
+            $valorParcela = $valorTotal / $numParcelas;
         }
 
-        for($i = 1; $i <= $numParcelas; $i++ ){
+        if ($valorEntrada > 0) {
+            $parcelas[] = [
+                'data_vencimento' => $dataAtual->format('Y-m-d'),
+                'valor' => $valorEntrada,
+                'numero' => 'parcela = 1',
+                'entrada' => true,
+            ];
+            $startIndex = 1; // Começa a partir da segunda parcela após a entrada
+        } else {
+            $startIndex = 0; // Começa a partir da primeira parcela
+        }
 
-            $numero_parcela = $tem_entrada ? ($i + 1) : $i;
-
-            $numPeriodos = $i - 1;
-
-            $parcela = [
-                'data_vencimento' => $this->somaDatas($primeiro_vencimento, $numPeriodos, $periodicidade),
-                'valor' => $valor_cada_parcela,
-                'numero' => 'parcela = ' . $numero_parcela,
+        for ($i = $startIndex; $i < $numParcelas; $i++) {
+            $dataVencimento = $this->somaDatas($primeiroVencimento, $i, $periodicidade);
+            $parcelas[] = [
+                'data_vencimento' => $dataVencimento,
+                'valor' => $valorParcela,
+                'numero' => 'parcela = ' . ($i + 1),
                 'entrada' => false,
             ];
-
-            array_push($parcelas, $parcela);
-
         }
 
         return $parcelas;
-
     }
 
 }
