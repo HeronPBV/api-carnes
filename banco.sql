@@ -1,12 +1,12 @@
 CREATE DATABASE apirestfull;
 
-CREATE TABLE carnes (
+USE apirestfull;
 
-	id int primary key auto_increment,
-	valor_total DECIMAL(10, 2) not NULL,
-	qtd_parcelas int not NULL,
-	data_primeiro_vencimento date not NULL,
-	periodicidade varchar(10) not NULL,
-	valor_entrada DECIMAL(10, 2) DEFAULT 0
-	
+CREATE TABLE carnes (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    valor_total DECIMAL(10, 2) NOT NULL,
+    qtd_parcelas INT NOT NULL,
+    data_primeiro_vencimento DATE NOT NULL,
+    periodicidade VARCHAR(10) NOT NULL,
+    valor_entrada DECIMAL(10, 2) DEFAULT 0
 );
