@@ -161,33 +161,34 @@ class CarneController extends Controller{
         return true;
     }
 
-    public function somaDatas(string $dataOriginal, int $numPeriodos, string $periodicidade) : string {
+    public function somaDatas(string $dataOriginal, int $numPeriodos, string $periodicidade): string {
 
-        if($periodicidade == "mensal"){
-
-            $add_text = "+ " . $numPeriodos . "months";
-
-        }elseif($periodicidade == "semanal"){
-
-            $add_text = "+ " . $numPeriodos . "weeks";
-
-        }else{
-
+        $periodosMap = [
+            'mensal' => 'months',
+            'semanal' => 'weeks',
+        ];
+    
+        $periodo = strtolower($periodicidade);
+    
+        if (!isset($periodosMap[$periodo])) {
+            
             http_response_code(400);
             echo json_encode(["Erro" => "periodicidade inválida"]);
             die();
 
         }
-
+    
+        $addText = "+ $numPeriodos " . $periodosMap[$periodo];
+        
         $novaData = new DateTime($dataOriginal);
-
-        $novaData->modify($add_text);
-
+        $novaData->modify($addText);
+    
         return $novaData->format('Y-m-d');
 
     }
 
     public function calculaParcelas( float $valorTotal, int $numParcelas, string $primeiroVencimento, string $periodicidade, float $valorEntrada = 0 ) : array {
+       
         $parcelas = [];
         $dataAtual = new DateTime();
         
