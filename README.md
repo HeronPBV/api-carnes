@@ -65,7 +65,7 @@ composer dump
 ## Lista dos endpoints e requisições
 
 <br>Por questões de simplificação, todos os endpoints abaixo terão como base o endereço tenex.api/
-<br> Esse endereço pode variar de acordo com o local onde você está testando o projeto, subistitua "tenex.api/" por "http://localhost:8000/" se você estiver rodando no seu ambiente local de acordo com as instruções de instalação acima ou por "www.heronboares.com.br/tenex.api/" se estiver testando pelo deploy supracitado.
+<br> Esse endereço pode variar de acordo com o local onde você está testando o projeto, substitua "tenex.api/" por "http://localhost:8000/" se você estiver rodando no seu ambiente local de acordo com as instruções de instalação acima ou por "www.heronboares.com.br/tenex.api/" se estiver testando pelo deploy supracitado.
 <br>
 <br>
 
@@ -95,7 +95,7 @@ Retorno: 200 (OK)
 <br>
 
 * tenex.api/carne/{id}
-<br>Para buscar por um carnê específico, subistitua {id} pelo id do carnê
+<br>Para buscar por um carnê específico, substitua {id} pelo id do carnê
 ~~~
 Retorno: 200 (OK)
 {
@@ -178,7 +178,7 @@ Retorno: 200 (OK)
     ]
 }
 ~~~
-O argumento valor_entrada é opicional, pode ser omitido, mas todos os outros parâmetros são obrigatórios e devem ser enviados exatamente como estão descritos.
+O argumento valor_entrada é opcional, pode ser omitido, mas todos os outros parâmetros são obrigatórios e devem ser enviados exatamente como estão descritos.
 
 ⚠️ Atenção ⚠️
 <br>Qualquer requisição inválida ou que infringir alguma regra de negócio receberá uma resposta com status code 400 (Bad Request) contendo o motivo da requisição não ser válida e instruções do que fazer.
@@ -187,7 +187,7 @@ O argumento valor_entrada é opicional, pode ser omitido, mas todos os outros pa
 Retorno: 400 (Bad Request)
 {
     "Erro": "O valor total do carnê não pode ser igual ou menor que zero. A entrada, se existir, precisa ser maior que zero",
-    "Instruções": "Consulte a documentação para entender o formato exato dos parametros de entrada",
+    "Instruções": "Consulte a documentação para entender o formato exato dos parâmetros de entrada",
     "Documentação": "https://github.com/HeronPBV/Carnes-restfull-API"
 }
 ~~~
@@ -195,7 +195,7 @@ Retorno: 400 (Bad Request)
 Retorno: 400 (Bad Request)
 {
     "Erro": "Não é possível dar entrada em um carnê de uma única parcela",
-    "Instruções": "Consulte a documentação para entender o formato exato dos parametros de entrada",
+    "Instruções": "Consulte a documentação para entender o formato exato dos parâmetros de entrada",
     "Documentação": "https://github.com/HeronPBV/Carnes-restfull-API"
 }
 ~~~
@@ -203,7 +203,7 @@ Retorno: 400 (Bad Request)
 Retorno: 400 (Bad Request)
 {
     "Erro": "O valor da entrada não pode ser igual ou maior que o valor total do carnê",
-    "Instruções": "Consulte a documentação para entender o formato exato dos parametros de entrada",
+    "Instruções": "Consulte a documentação para entender o formato exato dos parâmetros de entrada",
     "Documentação": "https://github.com/HeronPBV/Carnes-restfull-API"
 }
 ~~~
@@ -211,7 +211,7 @@ Retorno: 400 (Bad Request)
 Retorno: 400 (Bad Request)
 {
     "Erro": "A data de vencimento especificada não existe. É possível que tenha sido inserido um dia 31 em um mês que tem apenas 30 dias",
-    "Instruções": "Consulte a documentação para entender o formato exato dos parametros de entrada",
+    "Instruções": "Consulte a documentação para entender o formato exato dos parâmetros de entrada",
     "Documentação": "https://github.com/HeronPBV/Carnes-restfull-API"
 }
 ~~~
@@ -219,7 +219,7 @@ Retorno: 400 (Bad Request)
 Retorno: 400 (Bad Request)
 {
     "Erro": "Data de vencimento em formato incorreto, são válidos: 'yyyy-mm-dd' e 'yyyy/mm/dd'",
-    "Instruções": "Consulte a documentação para entender o formato exato dos parametros de entrada",
+    "Instruções": "Consulte a documentação para entender o formato exato dos parâmetros de entrada",
     "Documentação": "https://github.com/HeronPBV/Carnes-restfull-API"
 }
 ~~~

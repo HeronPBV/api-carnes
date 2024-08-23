@@ -36,7 +36,7 @@ class CarneController extends Controller{
             http_response_code(400);
             echo json_encode([
                 "Erro" => $isValid,
-                "Instruções" => "Consulte a documentação para entender o formato exato dos parametros de entrada",
+                "Instruções" => "Consulte a documentação para entender o formato exato dos parâmetros de entrada",
                 "Documentação" => DOC
             ]);
             die();
