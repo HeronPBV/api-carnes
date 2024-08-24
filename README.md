@@ -1,6 +1,6 @@
 # API RESTful - Gerenciamento de Parcelas de Carnê
 
-API Restfull de gerenciamento de carnês.
+API RESTful de gerenciamento de carnês.
 
 ## Sobre o projeto e seu desenvolvimento
 
@@ -78,7 +78,7 @@ Retorno: 200 (OK)
 {
     "Nome": "API restfull, para gerenciamento de parcelas de carnês.",
     "Instrução": "Acesse a documentação para descobrir os endpoints disponíveis",
-    "Documentação": "https://github.com/HeronPBV/Carnes-restfull-API"
+    "Documentação": "https://github.com/HeronPBV/api-carnes"
 }
 ~~~
 <br>
@@ -88,8 +88,8 @@ Retorno: 200 (OK)
 ~~~
 Retorno: 200 (OK)
 {
-    "Instrução": "Inclua o id do carnê buscado para receber as suas, informações ou acesse a documentação para descobrir os endpoints disponíveis",
-    "Documentação": "https://github.com/HeronPBV/Carnes-restfull-API"
+    "Instrução": "Inclua o id do carnê buscado para receber as suas informações ou acesse a documentação para descobrir os endpoints disponíveis",
+    "Documentação": "https://github.com/HeronPBV/api-carnes"
 }
 ~~~
 <br>
@@ -188,7 +188,7 @@ Retorno: 400 (Bad Request)
 {
     "Erro": "O valor total do carnê não pode ser igual ou menor que zero. A entrada, se existir, precisa ser maior que zero",
     "Instruções": "Consulte a documentação para entender o formato exato dos parâmetros de entrada",
-    "Documentação": "https://github.com/HeronPBV/Carnes-restfull-API"
+    "Documentação": "https://github.com/HeronPBV/api-carnes"
 }
 ~~~
 ~~~
@@ -196,7 +196,7 @@ Retorno: 400 (Bad Request)
 {
     "Erro": "Não é possível dar entrada em um carnê de uma única parcela",
     "Instruções": "Consulte a documentação para entender o formato exato dos parâmetros de entrada",
-    "Documentação": "https://github.com/HeronPBV/Carnes-restfull-API"
+    "Documentação": "https://github.com/HeronPBV/api-carnes"
 }
 ~~~
 ~~~
@@ -204,7 +204,7 @@ Retorno: 400 (Bad Request)
 {
     "Erro": "O valor da entrada não pode ser igual ou maior que o valor total do carnê",
     "Instruções": "Consulte a documentação para entender o formato exato dos parâmetros de entrada",
-    "Documentação": "https://github.com/HeronPBV/Carnes-restfull-API"
+    "Documentação": "https://github.com/HeronPBV/api-carnes"
 }
 ~~~
 ~~~
@@ -212,7 +212,7 @@ Retorno: 400 (Bad Request)
 {
     "Erro": "A data de vencimento especificada não existe. É possível que tenha sido inserido um dia 31 em um mês que tem apenas 30 dias",
     "Instruções": "Consulte a documentação para entender o formato exato dos parâmetros de entrada",
-    "Documentação": "https://github.com/HeronPBV/Carnes-restfull-API"
+    "Documentação": "https://github.com/HeronPBV/api-carnes"
 }
 ~~~
 ~~~
@@ -220,7 +220,7 @@ Retorno: 400 (Bad Request)
 {
     "Erro": "Data de vencimento em formato incorreto, são válidos: 'yyyy-mm-dd' e 'yyyy/mm/dd'",
     "Instruções": "Consulte a documentação para entender o formato exato dos parâmetros de entrada",
-    "Documentação": "https://github.com/HeronPBV/Carnes-restfull-API"
+    "Documentação": "https://github.com/HeronPBV/api-carnes"
 }
 ~~~
 
