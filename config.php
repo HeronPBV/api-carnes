@@ -7,4 +7,4 @@
     const DBUSER = 'root';
     const DBPASS = '';
 
-    const DOC = 'https://github.com/HeronPBV/Carnes-restfull-API';
+    const DOC = 'https://github.com/HeronPBV/api-carnes';

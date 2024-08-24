@@ -8,7 +8,7 @@ class CarneController extends Controller{
 
         http_response_code(200);
         echo json_encode([
-            "Instrução" => "Inclua o id do carnê buscado para receber as suas, informações ou acesse a documentação para descobrir os endpoints disponíveis",
+            "Instrução" => "Inclua o id do carnê buscado para receber as suas informações ou acesse a documentação para descobrir os endpoints disponíveis",
             "Documentação" => DOC
         ]);
 
