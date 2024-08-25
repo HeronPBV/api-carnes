@@ -35,7 +35,7 @@ https://www.heronboares.com.br/tenex.api
 <br>
 <br>Ele pode ser acessado e testado diretamente por lá através de alguma ferramenta de testes de APIs, como o Postman ou o Insomnia.
 <br>São válidas URLs GET ou POST como https://heronboares.com.br/tenex.api/carne
-<br>Confira ao final desde documento a lista completa dos endpoints.
+<br>Confira ao final deste documento a lista completa dos endpoints.
 <br>
 <br>Caso deseje executar o projeto localmente, siga as instruções abaixo.
 
@@ -45,7 +45,7 @@ https://www.heronboares.com.br/tenex.api
 
 1) Baixe todo o conteúdo e coloque em uma pasta.
 
-3) Rode todas as querys do arquivo banco.sql e atualize o arquivo Config.php com as credenciais de acesso corretas.
+3) Execute todas as querys do arquivo banco.sql e atualize o arquivo Config.php com as credenciais de acesso corretas.
 <br>  -> Note que o comando para criar o banco já está no script SQL, com o mesmo nome que está configurado por padrão no Config.php 
 
 2) Acesse a pasta /public via CLI e rode o seguinte comando 
